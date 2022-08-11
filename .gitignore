@@ -104,6 +104,7 @@ dist
 .tern-port
 
 #salesforce commerce cloud
-./dw.json
+.dw.json
 project_3
 storefront-reference-arhitecture
+.vscode
