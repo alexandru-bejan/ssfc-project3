@@ -1,5 +1,5 @@
 {
-  "name": "plugin-product-bundles-and-sets",
+  "name": "plugin_product_bundles_and_sets",
   "version": "0.0.1",
   "description": "New overlay cartridge",
   "main": "index.js",
@@ -7,7 +7,7 @@
     "lint": "sgmf-scripts --lint js && sgmf-scripts --lint css",
     "lint:fix": "sgmf-scripts --lint js --fix && sgmf-scripts --lint css --fix",
     "upload": "sgmf-scripts --upload -- ",
-    "uploadCartridge": "sgmf-scripts --uploadCartridge plugin-product-bundles-and-sets",
+    "uploadCartridge": "sgmf-scripts --uploadCartridge plugin_product_bundles_and_sets",
     "compile:js": "sgmf-scripts --compile js",
     "compile:scss": "sgmf-scripts --compile css"
   },
