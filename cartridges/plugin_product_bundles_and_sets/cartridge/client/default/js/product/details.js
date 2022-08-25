@@ -1,6 +1,24 @@
 'use strict';
 
 var base = require('base/product/base');
+var detail = require('base/product/detail');
+
+
+
+/**
+ * Update global add to cart button
+ */
+ function updateGlobalAddToCart() {
+    $(document).ready(function (e, response){
+        var enable = $('.product-availability').toArray().every(function (item) {
+            return $(item).data('available') && $(item).data('ready-to-order');
+        });
+        detail.methods.updateAddToCartEnableDisableOtherElements(!enable);
+    })
+}
+
+detail.updateGlobalAddToCart = updateGlobalAddToCart;
+
 
 /**
  * Process the attribute values for an attribute that has image swatches
@@ -359,7 +377,7 @@ function updateOptions(optionsHtml, $productContainer) {
  * @param {string} selectedValueUrl - the Url for the selected variation value
  * @param {jQuery} $productContainer - DOM element for current product
  */
-function attributeSelectCustom(selectedValueUrl, $productContainer) {
+function attributeSelect(selectedValueUrl, $productContainer) {
     console.log("attribute select custom test");
     if (selectedValueUrl) {
         $('body').trigger('product:beforeAttributeSelect', {
@@ -398,8 +416,9 @@ function colorAttribute() {
         if (!$productContainer.length) {
             $productContainer = $(this).closest('.product-detail');
         }
+        var isProductBundle = $('.product-bundle').length;
         if (isProductBundle) {
-            attributeSelectCustom(e.currentTarget.value, $productContainer);
+            attributeSelect(e.currentTarget.value, $productContainer);
         } else {
             base.attributeSelect(e.currentTarget.value, $productContainer);
         }
@@ -417,21 +436,19 @@ function selectAttribute() {
         }
         var isProductBundle = $('.product-bundle').length;
         if (isProductBundle) {
-            attributeSelectCustom(e.currentTarget.value, $productContainer);
+            attributeSelect(e.currentTarget.value, $productContainer);
         } else {
             base.attributeSelect(e.currentTarget.value, $productContainer);
         }
     });
 };
 
-var exportDetails = $.extend({}, base, {
-    attributeSelect: attributeSelectCustom,
-    colorAttribute: colorAttribute,
-    selectAttribute: selectAttribute
-});
+base.colorAttribute = colorAttribute;
+base.selectAttribute = selectAttribute;
+base.attributeSelect = attributeSelectCustom;
 
-// base.colorAttribute = colorAttribute;
-// base.selectAttribute = selectAttribute;
-// base.attributeSelect = attributeSelectCustom;
+var exportDetails = $.extend({}, base, detail, {
+    updateGlobalAddToCart: updateGlobalAddToCart
+});
 
 module.exports = exportDetails;
