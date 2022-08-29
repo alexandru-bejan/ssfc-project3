@@ -4,13 +4,12 @@
     </div>
 </div>
 
-<div class="bundle-items">
+<div class=" row bundle-items">
     <isloop items="${product.bundledProducts}" var="productItem" status="loopState">
         <isset name="product" value="${productItem}" scope="page" />
         <isset name="isBundle" value="${true}" scope="page" />
-
+        <div class="col-sm-6">
         <isinclude template="product/components/bundleItem" />
-
-        <isinclude template="product/components/descriptionAndDetails" />
+        </div>
     </isloop>
 </div>

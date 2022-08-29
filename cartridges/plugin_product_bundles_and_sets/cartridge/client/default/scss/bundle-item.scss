@@ -1,0 +1,17 @@
+.bundle-item .attributes {
+    padding-left: 0 ;
+    padding-right: 0;
+}
+
+.bundle-item .product-availability {
+display: block;
+}
+
+.bundle-item .product-availability div:last-child {
+flex: 0 0 100%;
+max-width: 100%;
+}
+
+.bundle-item .primary-images .carousel img {
+height: fit-content;
+}
