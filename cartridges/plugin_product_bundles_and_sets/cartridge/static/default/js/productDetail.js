@@ -91,10 +91,10 @@
 "use strict";
 
 
-//var processInclude = require('base/util');
+var processInclude = __webpack_require__(1);
 
 $(document).ready(function () {
-    processInclude(__webpack_require__(1));
+    processInclude(__webpack_require__(2));
 });
 
 
@@ -105,8 +105,28 @@ $(document).ready(function () {
 "use strict";
 
 
-let sfraBase = __webpack_require__(2);
-let sfraDetail = __webpack_require__(4);
+module.exports = function (include) {
+    if (typeof include === 'function') {
+        include();
+    } else if (typeof include === 'object') {
+        Object.keys(include).forEach(function (key) {
+            if (typeof include[key] === 'function') {
+                include[key]();
+            }
+        });
+    }
+};
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+let sfraBase = __webpack_require__(3);
+let sfraDetail = __webpack_require__(5);
 
 /**
  * Enable global add to cart button
@@ -674,12 +694,12 @@ module.exports = exportDetails;
 
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var focusHelper = __webpack_require__(3);
+var focusHelper = __webpack_require__(4);
 
 /**
  * Retrieves the relevant pid value
@@ -1529,7 +1549,7 @@ module.exports = {
 
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1571,12 +1591,12 @@ module.exports = {
 
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var base = __webpack_require__(2);
+var base = __webpack_require__(3);
 
 /**
  * Enable/disable UI elements
