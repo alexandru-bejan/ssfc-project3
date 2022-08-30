@@ -12,3 +12,16 @@
 
 .bundle-item .primary-images .carousel img {
   height: fit-content; }
+
+.sticky-add-to-cart .quantity-label {
+  display: none; }
+
+.sticky-add-to-cart {
+  position: fixed;
+  right: -20%;
+  top: 25%;
+  padding: 2.5em 1em;
+  box-shadow: -2px 6px 15px -1px rgba(0, 0, 0, 0.38);
+  border-radius: 5px;
+  border: 1px solid #eee;
+  transition: 1s; }
