@@ -1,17 +1,33 @@
 .bundle-item .attributes {
-    padding-left: 0 ;
+    padding-left: 0;
     padding-right: 0;
 }
 
 .bundle-item .product-availability {
-display: block;
+    display: block;
 }
 
 .bundle-item .product-availability div:last-child {
-flex: 0 0 100%;
-max-width: 100%;
+    flex: 0 0 100%;
+    max-width: 100%;
 }
 
 .bundle-item .primary-images .carousel img {
-height: fit-content;
+    height: fit-content;
+}
+
+.sticky-add-to-cart .quantity-label {
+    display: none;
+}
+
+.sticky-add-to-cart {
+    position: fixed;
+    right: -20%;
+    top: 25%;
+    padding: 2.5em 1em;
+    -webkit-box-shadow: -2px 6px 15px -1px rgba(0,0,0,0.38);
+    box-shadow: -2px 6px 15px -1px rgba(0,0,0,0.38);
+    border-radius: 5px;
+    border: 1px solid #eee;
+    transition: 1s;
 }

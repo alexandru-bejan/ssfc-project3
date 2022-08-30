@@ -79,19 +79,12 @@
                 <!-- Product Availability -->
                 <isinclude template="product/components/productAvailability" />
 
-                <div class="row">
-                    <div class="col-12">
-                        <hr>
-                    </div>
-                </div>
+                <hr>
 
-                <div class="row">
-                    <div class="col-12">
-                        <isinclude template="product/components/quantityStatic">
-                    </div>
-                </div>
-                <isinclude template="product/components/descriptionAndDetails" />
             </div>
+        </div>
+        <div class="col-sm-12">
+            <isinclude template="product/components/descriptionAndDetails" />
         </div>
     </div>
 </div>
