@@ -1,0 +1,18 @@
+.set-item .attributes {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.set-item .product-availability {
+    display: block;
+}
+
+.set-item .product-availability div:last-child {
+    -ms-flex: 0 0 100%;
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+
+.set-item .primary-images .carousel img {
+    height: fit-content;
+}
