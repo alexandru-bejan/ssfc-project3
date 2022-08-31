@@ -133,11 +133,7 @@ let sfraDetail = __webpack_require__(5);
  */
 function updateGlobalAddToCart() {
     $(document).ready(function (e, response) {
-        // var enable = $('.product-availability').toArray().every(function (item) {
-        //     return $(item).data('available') && $(item).data('ready-to-order');
-        // });
-      // sfraDetail.methods.updateAddToCartEnableDisableOtherElements(!enable);
-      $('button.add-to-cart-global').prop("disabled", false);
+        sfraDetail.methods.updateAddToCartEnableDisableOtherElements(false);
     })
 }
 
@@ -207,8 +203,6 @@ function showStickyAddToCart() {
         });
     });
 }
-
-
 
 /**
  * Retrieve product options
@@ -399,10 +393,33 @@ function addToCart(){
     });
 }
 
+function enableGlobalAddToCartAfterAttributeSelect(e, response) {
+    let quantityBox = $(e.target).find('.quantity-selector');
+    let product = response.data.product;
+    if (product.inventory && product.inventory.ats && product.productType === 'variant') {
+        $(e.target).find('.quantity-select').data('max-qty', product.inventory.ats);
+        $(quantityBox).removeAttr('disabled');
+    } else {
+        $(quantityBox).attr('disabled', '');
+    }
+    if ($('.modal.show .product-quickview .bundle-items').length) {
+        $('.modal.show').find(response.container).data('pid', response.data.product.id);
+        $('.modal.show').find(response.container).find('.product-id').text(response.data.product.id);
+    } else {
+        $('.modal.show .product-quickview').data('pid', response.data.product.id);
+    }
+
+    $('button.add-to-cart-global').prop("disabled", false);
+}
+
 sfraDetail.updateGlobalAddToCart = updateGlobalAddToCart;
 sfraDetail.manageInvalidMarks = manageInvalidMarks;
 sfraDetail.detailsAndDescriptionPid = detailsAndDescriptionPid;
 sfraDetail.showStickyAddToCart = showStickyAddToCart;
+
+$(document).ready(function () {
+    $('body').off('product:afterAttributeSelect').on('product:afterAttributeSelect', enableGlobalAddToCartAfterAttributeSelect);
+})
 
 var exportDetails = $.extend({}, sfraBase, sfraDetail, {
     addToCart: addToCart
