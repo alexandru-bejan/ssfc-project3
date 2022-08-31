@@ -1,30 +1,31 @@
-<isdecorate template="common/layout/page">
-
+	<isdecorate template="common/layout/page">
     <isscript>
         var assets = require('*/cartridge/scripts/assets');
         assets.addJs('/js/productDetail.js');
         assets.addCss('/css/product/detail.css');
     </isscript>
-
     <iscomment>
         It is necessary to set both "set" and "product" to pdict.product here as the downstream.
     </iscomment>
-
     <isset name="product" value="${pdict.product}" scope="page" />
     <isset name="productCopy" value="${pdict.product}" scope="page" />
     <isset name="isBundle" value="${false}" scope="page" />
     <isset name="isProductSet" value="${true}" scope="page" />
     <isset name="isQuickView" value="${false}" scope="page" />
-    <isobject object="${product.raw}" view="detail" />
-
+    <isset name="isPDPQuickViewApplePayEnabled" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('isPdpQuickViewApplePayEnabled')}" scope="page" />
+    <isobject object="${product.raw}" view="detail">
     <div class="container product-detail product-set-detail" data-pid="${product.id}">
         <div class="row">
             <div class="col-12">
-                <!---Breadcrumbs--->
+                <iscomment>
+                    Breadcrumbs
+                </iscomment>
                 <div class="product-breadcrumb">
                     <isinclude template="components/breadcrumbs/pageBreadcrumbs"/>
                 </div>
-                <!-- Product Name -->
+                <iscomment>
+                    Product Name
+                </iscomment>
                 <div class="row">
                     <div class="col-sm-12">
                         <h1 class="product-name">${product.productName}</h1>
@@ -32,25 +33,47 @@
                 </div>
             </div>
         </div>
+
+        <div class="row product-set">
+             <!-- Product Images Carousel -->
+
+            <isinclude template="product/components/imageCarousel" />
+
+            <div class="col-12 col-sm-6 bundle-footer">
+                <iscomment>
+                    Quantity
+                </iscomment>
+                <div class="col-12 prices-add-to-cart-actions">
+                    <isset name="product" value="${productCopy}" scope="page" />
+                    <iscomment>
+                        Prices
+                    </iscomment>
+                    <isinclude template="product/components/pricing/setPrice" />
+                    <iscomment>
+                        Cart and [Optionally] Apple Pay
+                    </iscomment>
+                    <isinclude template="product/components/addToCartGlobal" />
+                </div>
+            </div>
+
+        </div>
+
+        <isinclude template="product/components/descriptionAndDetails" />
+
         <hr>
+
         <div class="row">
              <div class="col-12">
                  <h4>${Resource.msg('label.set.contains', 'product', null)}</h4>
              </div>
         </div>
         <isinclude template="product/components/setItems" />
-        <hr>
-        <div class="col-12 col-sm-6 offset-sm-6 bundle-footer">
-            <!-- Quantity -->
-            <div class="col-12 prices-add-to-cart-actions">
-                <isset name="product" value="${productCopy}" scope="page" />
-                <!-- Prices -->
-                <isinclude template="product/components/pricing/setPrice" />
-                <!-- Cart and [Optionally] Apple Pay -->
-                <isinclude template="product/components/addToCartGlobal" />
-            </div>
-        </div>
 
-        <isinclude template="product/components/descriptionAndDetails" />
     </div>
 </isdecorate>
+
+
+
+
+
+
