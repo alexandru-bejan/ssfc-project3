@@ -1,8 +1,3 @@
-<isscript>
-        var assets = require('*/cartridge/scripts/assets');
-        assets.addCss('/css/bundle-item.css');
-    </isscript>
-
 <div class="container product-detail bundle-item" data-pid="${product.id}">
     <div class="row">
         <div class="col-12">

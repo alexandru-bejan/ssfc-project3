@@ -34,6 +34,7 @@
     "ie >= 10"
   ],
   "paths": {
-    "base": "../storefront-reference-architecture/cartridges/app_storefront_base"
+    "base": "../storefront-reference-architecture/cartridges/app_storefront_base",
+    "race": "../storefront-reference-architecture/cartridges/app_accelerator_race"
   }
 }

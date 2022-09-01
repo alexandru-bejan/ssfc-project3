@@ -1,3 +1,8 @@
+<isscript>
+    var assets = require('*/cartridge/scripts/assets');
+    assets.addCss('/css/bundle-item.css');
+</isscript>
+
 <div class="row">
     <div class="col-12">
         <h2 class="bundle-items-label">${Resource.msg('label.bundle.contains', 'product', null)}</h2>
@@ -8,8 +13,8 @@
     <isloop items="${product.bundledProducts}" var="productItem" status="loopState">
         <isset name="product" value="${productItem}" scope="page" />
         <isset name="isBundle" value="${true}" scope="page" />
-        <div class="col-sm-6">
-        <isinclude template="product/components/bundleItem" />
+        <div class="col-sm-6 custom-col">
+            <isinclude template="product/components/bundleItem" />
         </div>
     </isloop>
 </div>

@@ -27,6 +27,10 @@ function detailsAndDescriptionPid() {
     })
 }
 
+/**
+ * Show sticky add to cart button when the scrren is scolled past the stationary add to cart.
+ */
+
 function showStickyAddToCart() {
     $(document).ready(function () {
         $(window).bind('scroll', function (event) {

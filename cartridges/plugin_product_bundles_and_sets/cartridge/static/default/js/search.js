@@ -81,24 +81,11 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = 6);
 /******/ })
 /************************************************************************/
 /******/ ([
-/* 0 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var processInclude = __webpack_require__(1);
-
-$(document).ready(function () {
-    processInclude(__webpack_require__(2));
-});
-
-
-/***/ }),
+/* 0 */,
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -119,31 +106,306 @@ module.exports = function (include) {
 
 
 /***/ }),
-/* 2 */
+/* 2 */,
+/* 3 */,
+/* 4 */,
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var base = __webpack_require__(3);
+module.exports = {
+    setTabNextFocus: function (focusParams) {
+        var KEYCODE_TAB = 9;
+        var isTabPressed = (focusParams.event.key === 'Tab' || focusParams.event.keyCode === KEYCODE_TAB);
+
+        if (!isTabPressed) {
+            return;
+        }
+
+        var firstFocusableEl = $(focusParams.containerSelector + ' ' + focusParams.firstElementSelector);
+        var lastFocusableEl = $(focusParams.containerSelector + ' ' + focusParams.lastElementSelector);
+
+        if ($(focusParams.containerSelector + ' ' + focusParams.lastElementSelector).is(':disabled')) {
+            lastFocusableEl = $(focusParams.containerSelector + ' ' + focusParams.nextToLastElementSelector);
+            if ($('.product-quickview.product-set').length > 0) {
+                var linkElements = $(focusParams.containerSelector + ' a#fa-link.share-icons');
+                lastFocusableEl = linkElements[linkElements.length - 1];
+            }
+        }
+
+        if (focusParams.event.shiftKey) /* shift + tab */ {
+            if ($(':focus').is(firstFocusableEl)) {
+                lastFocusableEl.focus();
+                focusParams.event.preventDefault();
+            }
+        } else /* tab */ {
+            if ($(':focus').is(lastFocusableEl)) { // eslint-disable-line
+                firstFocusableEl.focus();
+                focusParams.event.preventDefault();
+            }
+        }
+    }
+};
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var processInclude = __webpack_require__(1);
+
+$(document).ready(function () {
+    processInclude(__webpack_require__(7));
+    processInclude(__webpack_require__(8));
+});
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
 
 /**
- * Update global add to cart button
+ * Update DOM elements with Ajax results
+ *
+ * @param {Object} $results - jQuery DOM element
+ * @param {string} selector - DOM element to look up in the $results
+ * @return {undefined}
  */
-function updateGlobalAddToCart() {
-    $(document).ready(function (e, response) {
-        var enable = $('.product-availability').toArray().every(function (item) {
-            return $(item).data('available') && $(item).data('ready-to-order');
-        });
-        base.methods.updateAddToCartEnableDisableOtherElements(!enable);
-    })
+function updateDom($results, selector) {
+    var $updates = $results.find(selector);
+    $(selector).empty().html($updates.html());
 }
+
+/**
+ * Keep refinement panes expanded/collapsed after Ajax refresh
+ *
+ * @param {Object} $results - jQuery DOM element
+ * @return {undefined}
+ */
+function handleRefinements($results) {
+    $('.refinement.active').each(function () {
+        $(this).removeClass('active');
+        var activeDiv = $results.find('.' + $(this)[0].className.replace(/ /g, '.'));
+        activeDiv.addClass('active');
+        activeDiv.find('button.title').attr('aria-expanded', 'true');
+    });
+
+    updateDom($results, '.refinements');
+}
+
+/**
+ * Parse Ajax results and updated select DOM elements
+ *
+ * @param {string} response - Ajax response HTML code
+ * @return {undefined}
+ */
+function parseResults(response) {
+    var $results = $(response);
+    var specialHandlers = {
+        '.refinements': handleRefinements
+    };
+
+    // Update DOM elements that do not require special handling
+    [
+        '.grid-header',
+        '.header-bar',
+        '.header.page-title',
+        '.product-grid',
+        '.show-more',
+        '.filter-bar'
+    ].forEach(function (selector) {
+        updateDom($results, selector);
+    });
+
+    Object.keys(specialHandlers).forEach(function (selector) {
+        specialHandlers[selector]($results);
+    });
+}
+
+/**
+ * This function retrieves another page of content to display in the content search grid
+ * @param {JQuery} $element - the jquery element that has the click event attached
+ * @param {JQuery} $target - the jquery element that will receive the response
+ * @return {undefined}
+ */
+function getContent($element, $target) {
+    var showMoreUrl = $element.data('url');
+    $.spinner().start();
+    $.ajax({
+        url: showMoreUrl,
+        method: 'GET',
+        success: function (response) {
+            $target.append(response);
+            $.spinner().stop();
+        },
+        error: function () {
+            $.spinner().stop();
+        }
+    });
+}
+
+/**
+ * Update sort option URLs from Ajax response
+ *
+ * @param {string} response - Ajax response HTML code
+ * @return {undefined}
+ */
+function updateSortOptions(response) {
+    var $tempDom = $('<div>').append($(response));
+    var sortOptions = $tempDom.find('.grid-footer').data('sort-options').options;
+    sortOptions.forEach(function (option) {
+        $('option.' + option.id).val(option.url);
+    });
+}
+
+module.exports = {
+    filter: function () {
+        // Display refinements bar when Menu icon clicked
+        $('.container').on('click', 'button.filter-results', function () {
+            $('.refinement-bar, .modal-background').show();
+            $('.refinement-bar').siblings().attr('aria-hidden', true);
+            $('.refinement-bar').closest('.row').siblings().attr('aria-hidden', true);
+            $('.refinement-bar').closest('.tab-pane.active').siblings().attr('aria-hidden', true);
+            $('.refinement-bar').closest('.container.search-results').siblings().attr('aria-hidden', true);
+            $('.refinement-bar .close').focus();
+        });
+    },
+
+    closeRefinements: function () {
+        // Refinements close button
+        $('.container').on('click', '.refinement-bar button.close, .modal-background', function () {
+            $('.refinement-bar, .modal-background').hide();
+            $('.refinement-bar').siblings().attr('aria-hidden', false);
+            $('.refinement-bar').closest('.row').siblings().attr('aria-hidden', false);
+            $('.refinement-bar').closest('.tab-pane.active').siblings().attr('aria-hidden', false);
+            $('.refinement-bar').closest('.container.search-results').siblings().attr('aria-hidden', false);
+            $('.btn.filter-results').focus();
+        });
+    },
+
+    resize: function () {
+        // Close refinement bar and hide modal background if user resizes browser
+        $(window).resize(function () {
+            $('.refinement-bar, .modal-background').hide();
+            $('.refinement-bar').siblings().attr('aria-hidden', false);
+            $('.refinement-bar').closest('.row').siblings().attr('aria-hidden', false);
+            $('.refinement-bar').closest('.tab-pane.active').siblings().attr('aria-hidden', false);
+            $('.refinement-bar').closest('.container.search-results').siblings().attr('aria-hidden', false);
+        });
+    },
+
+    sort: function () {
+        // Handle sort order menu selection
+        $('.container').on('change', '[name=sort-order]', function (e) {
+            e.preventDefault();
+
+            $.spinner().start();
+            $(this).trigger('search:sort', this.value);
+            $.ajax({
+                url: this.value,
+                data: { selectedUrl: this.value },
+                method: 'GET',
+                success: function (response) {
+                    $('.product-grid').empty().html(response);
+                    $.spinner().stop();
+                },
+                error: function () {
+                    $.spinner().stop();
+                }
+            });
+        });
+    },
+
+    showMore: function () {
+        // Show more products
+        $('.container').on('click', '.show-more button', function (e) {
+            e.stopPropagation();
+            var showMoreUrl = $(this).data('url');
+            e.preventDefault();
+
+            $.spinner().start();
+            $(this).trigger('search:showMore', e);
+            $.ajax({
+                url: showMoreUrl,
+                data: { selectedUrl: showMoreUrl },
+                method: 'GET',
+                success: function (response) {
+                    $('.grid-footer').replaceWith(response);
+                    updateSortOptions(response);
+                    $.spinner().stop();
+                },
+                error: function () {
+                    $.spinner().stop();
+                }
+            });
+        });
+    },
+
+    applyFilter: function () {
+        // Handle refinement value selection and reset click
+        $('.container').on(
+            'click',
+            '.refinements li button, .refinement-bar button.reset, .filter-value button, .swatch-filter button',
+            function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                $.spinner().start();
+                $(this).trigger('search:filter', e);
+                $.ajax({
+                    url: $(this).data('href'),
+                    data: {
+                        page: $('.grid-footer').data('page-number'),
+                        selectedUrl: $(this).data('href')
+                    },
+                    method: 'GET',
+                    success: function (response) {
+                        parseResults(response);
+                        $.spinner().stop();
+                    },
+                    error: function () {
+                        $.spinner().stop();
+                    }
+                });
+            });
+    },
+
+    showContentTab: function () {
+        // Display content results from the search
+        $('.container').on('click', '.content-search', function () {
+            if ($('#content-search-results').html() === '') {
+                getContent($(this), $('#content-search-results'));
+            }
+        });
+
+        // Display the next page of content results from the search
+        $('.container').on('click', '.show-more-content button', function () {
+            getContent($(this), $('#content-search-results'));
+            $('.show-more-content').remove();
+        });
+    }
+};
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var race = __webpack_require__(9);
 
 /**
  * Add product id to details and description accordions
  */
 
-function detailsAndDescriptionPid() {
+ function detailsAndDescriptionPid() {
     $(document).ready(function () {
         $('.accBody').each(function () {
             let prodId = $(this).attr('id');
@@ -152,107 +414,158 @@ function detailsAndDescriptionPid() {
     })
 }
 
-/**
- * Show sticky add to cart button when the scrren is scolled past the stationary add to cart.
- */
+race.detailsAndDescriptionPid = detailsAndDescriptionPid;
 
-function showStickyAddToCart() {
-    $(document).ready(function () {
-        $(window).bind('scroll', function (event) {
-            var win = $(this),
-                doc = $(document),
-                winH = win.height(),
-                winT = win.scrollTop(),
-                docH = doc.height(),
-                elH = $('.product-bundle').height() - 100;
-            if (docH - winH - winT < elH) {
-                $('.sticky-add-to-cart').css("right", "5%");
-            } else {
-                $('.sticky-add-to-cart').css("right", "-20%");
-            }
-        });
-    });
-}
-
-base.updateGlobalAddToCart = updateGlobalAddToCart;
-base.detailsAndDescriptionPid = detailsAndDescriptionPid;
-base.showStickyAddToCart = showStickyAddToCart;
-
-module.exports = base;
+module.exports = race;
 
 /***/ }),
-/* 3 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var base = __webpack_require__(4);
+var base = __webpack_require__(10);
+var focusHelper = __webpack_require__(5);
 
 /**
- * Enable/disable UI elements
- * @param {boolean} enableOrDisable - true or false
+ * Generates the modal window on the first call.
+ *
  */
-function updateAddToCartEnableDisableOtherElements(enableOrDisable) {
-    $('button.add-to-cart-global').attr('disabled', enableOrDisable);
+function getModalHtmlElement() {
+    if ($('#quickViewModal').length !== 0) {
+        $('#quickViewModal').remove();
+    }
+    var htmlString = '<!-- Modal -->'
+        + '<div class="modal fade" id="quickViewModal" role="dialog">'
+        + '<span class="enter-message sr-only" ></span>'
+        + '<div class="modal-dialog quick-view-dialog">'
+        + '<!-- Modal content-->'
+        + '<div class="modal-content">'
+        + '<div class="modal-header">'
+        + '    <a class="full-pdp-link" href=""></a>'
+        + '    <button type="button" class="close pull-right" data-dismiss="modal">'
+        + '        <span aria-hidden="true">&times;</span>'
+        + '        <span class="sr-only"> </span>'
+        + '    </button>'
+        + '</div>'
+        + '<div class="modal-body"></div>'
+        + '<div class="modal-footer"></div>'
+        + '</div>'
+        + '</div>'
+        + '</div>';
+    $('body').append(htmlString);
+}
+
+/**
+ * @typedef {Object} QuickViewHtml
+ * @property {string} body - Main Quick View body
+ * @property {string} footer - Quick View footer content
+ */
+
+/**
+ * Parse HTML code in Ajax response
+ *
+ * @param {string} html - Rendered HTML from quickview template
+ * @return {QuickViewHtml} - QuickView content components
+ */
+function parseHtml(html) {
+    var $html = $('<div>').append($.parseHTML(html));
+
+    var body = $html.find('.product-quickview');
+    var footer = $html.find('.modal-footer').children();
+
+    return { body: body, footer: footer };
+}
+
+/**
+ * replaces the content in the modal window on for the selected product variation.
+ * @param {string} selectedValueUrl - url to be used to retrieve a new product model
+ */
+function fillModalElement(selectedValueUrl) {
+    $('.modal-body').spinner().start();
+    $.ajax({
+        url: selectedValueUrl,
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            var parsedHtml = parseHtml(data.renderedTemplate);
+            var $quickViewModal = $('#quickViewModal');
+
+            $quickViewModal.find('.modal-body').empty();
+            $quickViewModal.find('.modal-body').html(parsedHtml.body);
+            $quickViewModal.find('.modal-footer').html(parsedHtml.footer);
+            $('.full-pdp-link').text(data.quickViewFullDetailMsg);
+            $quickViewModal.find('.full-pdp-link').attr('href', data.productUrl);
+            $quickViewModal.find('.size-chart').attr('href', data.productUrl);
+            $quickViewModal.find('.modal-header .close .sr-only').text(data.closeButtonText);
+            $quickViewModal.find('.enter-message').text(data.enterDialogMessage);
+            $('#quickViewModal').modal('show');
+            $('body').trigger('quickview:ready');
+
+            $.spinner().stop();
+        },
+        error: function () {
+            $.spinner().stop();
+        }
+    });
 }
 
 module.exports = {
-    methods: {
-        updateAddToCartEnableDisableOtherElements: updateAddToCartEnableDisableOtherElements
-    },
-
-    availability: base.availability,
-
-    addToCart: base.addToCart,
-
-    updateAttributesAndDetails: function () {
-        $('body').on('product:statusUpdate', function (e, data) {
-            var $productContainer = $('.product-detail[data-pid="' + data.id + '"]');
-
-            $productContainer.find('.description-and-detail .product-attributes')
-                .empty()
-                .html(data.attributesHtml);
-
-            if (data.shortDescription) {
-                $productContainer.find('.description-and-detail .description')
-                    .removeClass('hidden-xl-down');
-                $productContainer.find('.description-and-detail .description .content')
-                    .empty()
-                    .html(data.shortDescription);
-            } else {
-                $productContainer.find('.description-and-detail .description')
-                    .addClass('hidden-xl-down');
-            }
-
-            if (data.longDescription) {
-                $productContainer.find('.description-and-detail .details')
-                    .removeClass('hidden-xl-down');
-                $productContainer.find('.description-and-detail .details .content')
-                    .empty()
-                    .html(data.longDescription);
-            } else {
-                $productContainer.find('.description-and-detail .details')
-                    .addClass('hidden-xl-down');
-            }
+    showQuickview: function () {
+        $('body').on('click', '.quickview', function (e) {
+            e.preventDefault();
+            var selectedValueUrl = $(this).closest('a.quickview').attr('href');
+            $(e.target).trigger('quickview:show');
+            getModalHtmlElement();
+            fillModalElement(selectedValueUrl);
         });
     },
-
+    focusQuickview: function () {
+        $('body').on('shown.bs.modal', '#quickViewModal', function () {
+            $('#quickViewModal .close').focus();
+        });
+    },
+    trapQuickviewFocus: function () {
+        $('body').on('keydown', '#quickViewModal', function (e) {
+            var focusParams = {
+                event: e,
+                containerSelector: '#quickViewModal',
+                firstElementSelector: '.full-pdp-link',
+                lastElementSelector: '.add-to-cart-global',
+                nextToLastElementSelector: '.modal-footer .quantity-select'
+            };
+            focusHelper.setTabNextFocus(focusParams);
+        });
+    },
+    availability: base.availability,
+    addToCart: base.addToCart,
     showSpinner: function () {
-        $('body').on('product:beforeAddToCart product:beforeAttributeSelect', function () {
-            $.spinner().start();
+        $('body').on('product:beforeAddToCart', function (e, data) {
+            $(data).closest('.modal-content').spinner().start();
+        });
+    },
+    hideDialog: function () {
+        $('body').on('product:afterAddToCart', function () {
+            $('#quickViewModal').modal('hide');
+        });
+    },
+    beforeUpdateAttribute: function () {
+        $('body').on('product:beforeAttributeSelect', function () {
+            $('.modal.show .modal-content').spinner().start();
         });
     },
     updateAttribute: function () {
         $('body').on('product:afterAttributeSelect', function (e, response) {
-            if ($('.product-detail>.bundle-items').length) {
-                response.container.data('pid', response.data.product.id);
-                response.container.find('.product-id').text(response.data.product.id);
-            } else if ($('.product-set-detail').eq(0)) {
-                response.container.data('pid', response.data.product.id);
+            if ($('.modal.show .product-quickview>.bundle-items').length) {
+                $('.modal.show').find(response.container).data('pid', response.data.product.id);
+                $('.modal.show').find(response.container)
+                    .find('.product-id').text(response.data.product.id);
+            } else if ($('.set-items').length) {
                 response.container.find('.product-id').text(response.data.product.id);
             } else {
-                $('.product-id').text(response.data.product.id);
-                $('.product-detail:not(".bundle-item")').data('pid', response.data.product.id);
+                $('.modal.show .product-quickview').data('pid', response.data.product.id);
+                $('.modal.show .full-pdp-link')
+                    .attr('href', response.data.product.selectedProductUrl);
             }
         });
     },
@@ -262,84 +575,60 @@ module.exports = {
             $('button.add-to-cart', response.$productContainer).attr('disabled',
                 (!response.product.readyToOrder || !response.product.available));
 
-            var enable = $('.product-availability').toArray().every(function (item) {
-                return $(item).data('available') && $(item).data('ready-to-order');
-            });
-            module.exports.methods.updateAddToCartEnableDisableOtherElements(!enable);
+            // update global add to cart (single products, bundles)
+            var dialog = $(response.$productContainer)
+                .closest('.quick-view-dialog');
+
+            $('.add-to-cart-global', dialog).attr('disabled',
+                !$('.global-availability', dialog).data('ready-to-order')
+                || !$('.global-availability', dialog).data('available')
+            );
         });
     },
     updateAvailability: function () {
         $('body').on('product:updateAvailability', function (e, response) {
-            $('div.availability', response.$productContainer)
+            // bundle individual products
+            $('.product-availability', response.$productContainer)
                 .data('ready-to-order', response.product.readyToOrder)
-                .data('available', response.product.available);
+                .data('available', response.product.available)
+                .find('.availability-msg')
+                .empty()
+                .html(response.message);
 
-            $('.availability-msg', response.$productContainer)
-                .empty().html(response.message);
 
-            if ($('.global-availability').length) {
-                var allAvailable = $('.product-availability').toArray()
+            var dialog = $(response.$productContainer)
+                .closest('.quick-view-dialog');
+
+            if ($('.product-availability', dialog).length) {
+                // bundle all products
+                var allAvailable = $('.product-availability', dialog).toArray()
                     .every(function (item) { return $(item).data('available'); });
 
-                var allReady = $('.product-availability').toArray()
+                var allReady = $('.product-availability', dialog).toArray()
                     .every(function (item) { return $(item).data('ready-to-order'); });
 
-                $('.global-availability')
+                $('.global-availability', dialog)
                     .data('ready-to-order', allReady)
                     .data('available', allAvailable);
 
-                $('.global-availability .availability-msg').empty()
+                $('.global-availability .availability-msg', dialog).empty()
                     .html(allReady ? response.message : response.resources.info_selectforstock);
+            } else {
+                // single product
+                $('.global-availability', dialog)
+                    .data('ready-to-order', response.product.readyToOrder)
+                    .data('available', response.product.available)
+                    .find('.availability-msg')
+                    .empty()
+                    .html(response.message);
             }
         });
-    },
-    sizeChart: function () {
-        $('.size-chart a').on('click', function (e) {
-            e.preventDefault();
-            var url = $(this).attr('href');
-            var $prodSizeChart = $(this).closest('.size-chart').find('.size-chart-collapsible');
-            if ($prodSizeChart.is(':empty')) {
-                $.ajax({
-                    url: url,
-                    type: 'get',
-                    dataType: 'json',
-                    success: function (data) {
-                        $prodSizeChart.append(data.content);
-                    }
-                });
-            }
-            $prodSizeChart.toggleClass('active');
-        });
-
-        var $sizeChart = $('.size-chart-collapsible');
-        $('body').on('click touchstart', function (e) {
-            if ($('.size-chart').has(e.target).length <= 0) {
-                $sizeChart.removeClass('active');
-            }
-        });
-    },
-    copyProductLink: function () {
-        $('body').on('click', '#fa-link', function () {
-            event.preventDefault();
-            var $temp = $('<input>');
-            $('body').append($temp);
-            $temp.val($('#shareUrl').val()).select();
-            document.execCommand('copy');
-            $temp.remove();
-            $('.copy-link-message').attr('role', 'alert');
-            $('.copy-link-message').removeClass('d-none');
-            setTimeout(function () {
-                $('.copy-link-message').addClass('d-none');
-            }, 3000);
-        });
-    },
-
-    focusChooseBonusProductModal: base.focusChooseBonusProductModal()
+    }
 };
 
 
 /***/ }),
-/* 4 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -668,7 +957,7 @@ function handleVariantResponse(response, $productContainer) {
  * @param {jQuery} $productContainer - DOM container for a given product
  */
 function updateQuantities(quantities, $productContainer) {
-    if ($productContainer.parent('.bonus-product-item').length <= 0) {
+    if (!($productContainer.parent('.bonus-product-item').length > 0)) {
         var optionsHtml = quantities.map(function (quantity) {
             var selected = quantity.selected ? ' selected ' : '';
             return '<option value="' + quantity.value + '"  data-url="' + quantity.url + '"' +
@@ -1190,48 +1479,6 @@ module.exports = {
     getPidValue: getPidValue,
     getQuantitySelected: getQuantitySelected,
     miniCartReportingUrl: miniCartReportingUrl
-};
-
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = {
-    setTabNextFocus: function (focusParams) {
-        var KEYCODE_TAB = 9;
-        var isTabPressed = (focusParams.event.key === 'Tab' || focusParams.event.keyCode === KEYCODE_TAB);
-
-        if (!isTabPressed) {
-            return;
-        }
-
-        var firstFocusableEl = $(focusParams.containerSelector + ' ' + focusParams.firstElementSelector);
-        var lastFocusableEl = $(focusParams.containerSelector + ' ' + focusParams.lastElementSelector);
-
-        if ($(focusParams.containerSelector + ' ' + focusParams.lastElementSelector).is(':disabled')) {
-            lastFocusableEl = $(focusParams.containerSelector + ' ' + focusParams.nextToLastElementSelector);
-            if ($('.product-quickview.product-set').length > 0) {
-                var linkElements = $(focusParams.containerSelector + ' a#fa-link.share-icons');
-                lastFocusableEl = linkElements[linkElements.length - 1];
-            }
-        }
-
-        if (focusParams.event.shiftKey) /* shift + tab */ {
-            if ($(':focus').is(firstFocusableEl)) {
-                lastFocusableEl.focus();
-                focusParams.event.preventDefault();
-            }
-        } else /* tab */ {
-            if ($(':focus').is(lastFocusableEl)) { // eslint-disable-line
-                firstFocusableEl.focus();
-                focusParams.event.preventDefault();
-            }
-        }
-    }
 };
 
 
