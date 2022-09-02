@@ -4,17 +4,17 @@ let sfraBase = require('base/product/base');
 let sfraDetail = require('base/product/detail');
 
 /**
- * Update global add to cart button
- */
-function updateGlobalAddToCart() {
+*Update global add to cart button
+*/
+function enableGlobalAddToCart() {
     $(document).ready(function (e, response) {
         sfraDetail.methods.updateAddToCartEnableDisableOtherElements(false);
     })
 }
 
 /**
- * Manage invalid marks at product variant selection
- */
+* Manage invalid marks for sets at product variant selection
+*/
 function manageInvalidMarks() {
     $(document).ready(function (e, response) {
         manageInvalidMarkForSizeSelect();
@@ -22,6 +22,9 @@ function manageInvalidMarks() {
     })
 }
 
+/**
+* Manage invalid marks for sets at product size selection
+*/
 function manageInvalidMarkForSizeSelect() {
     $(".select-size").on('change', function () {
         if ($(this).val() != $(this).find("option:first-child").val() ) {
@@ -29,10 +32,12 @@ function manageInvalidMarkForSizeSelect() {
         } else {
             $(this).addClass("is-invalid")
         }
-        $('button.add-to-cart-global').prop("disabled", false);
     })
 }
 
+/**
+* Manage invalid marks for sets at product color selection
+*/
 function manageInvalidMarkForColorSelect() {
     $(".attribute > :button").on("click", function () {
         if (($(this).find("span").hasClass("selectable") && !$(this).find("span").hasClass("selected")) ||
@@ -45,7 +50,6 @@ function manageInvalidMarkForColorSelect() {
                 "border-color":"red"
             })
         }
-        $('button.add-to-cart-global').prop("disabled", false);
     })
 }
 
@@ -272,7 +276,7 @@ function addToCart(){
     });
 }
 
-sfraDetail.updateGlobalAddToCart = updateGlobalAddToCart;
+sfraDetail.enableGlobalAddToCart = enableGlobalAddToCart;
 sfraDetail.manageInvalidMarks = manageInvalidMarks;
 sfraDetail.detailsAndDescriptionPid = detailsAndDescriptionPid;
 sfraDetail.showStickyAddToCart = showStickyAddToCart;
