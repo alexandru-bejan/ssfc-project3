@@ -3,6 +3,7 @@
         var assets = require('*/cartridge/scripts/assets');
         assets.addJs('/js/productDetail.js');
         assets.addCss('/css/product/detail.css');
+        assets.addCss('/css/setDetails.css');
     </isscript>
     <iscomment>
         It is necessary to set both "set" and "product" to pdict.product here as the downstream.
@@ -69,6 +70,27 @@
         </div>
         <isinclude template="product/components/setItems" />
 
+    </div>
+
+    <div class="col-sm-2 row bundle-footer sticky-add-to-cart mobile-hide">
+
+        <!-- Availability -->
+        <iscomment> <div class="availability clearfix global-availability" data-ready-to-order="${bundle.readyToOrder}">
+            <isinclude template="product/components/availabilityBundleContainer" />
+        </div> </iscomment>
+
+        <div class="col-12 prices-add-to-cart-actions">
+            <!-- Prices -->
+            <div class="bundlePrices mb-3">
+                <isset name="price" value="${product.price}" scope="page" />
+                <isinclude template="product/components/pricing/main" />
+            </div>
+        </div>
+
+        <div class="col-12 d-flex align-items-end justify-content-center">
+           <!-- Cart and [Optionally] Apple Pay -->
+            <isinclude template="product/components/addToCartGlobal" />
+        </div>
     </div>
 </isdecorate>
 

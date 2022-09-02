@@ -8,7 +8,7 @@
     <isloop items="${product.bundledProducts}" var="productItem" status="loopState">
         <isset name="product" value="${productItem}" scope="page" />
         <isset name="isBundle" value="${true}" scope="page" />
-        <div class="col-sm-6">
+        <div class="col-sm-6 col-custom">
         <isinclude template="product/components/bundleItem" />
         </div>
     </isloop>

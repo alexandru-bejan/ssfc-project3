@@ -1,11 +1,12 @@
 <isscript>
     var assets = require('*/cartridge/scripts/assets');
     assets.addCss('/css/setItems.css');
+    assets.addCss('/css/setQuickView.css');
 </isscript>
 <div class="row set-items" itemtype="http://schema.org/SomeProducts" itemid="#product">
     <isloop items="${productCopy.individualProducts}" var="productItem" status="loopState">
         <isset name="product" value="${productItem}" scope="page" />
-        <div class="col-sm-6">
+        <div class="col-sm-6 col-custom">
             <div class="container product-detail set-item" data-pid="${product.id}">
                 <div class="row">
                     <div class="col-12">

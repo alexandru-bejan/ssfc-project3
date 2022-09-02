@@ -159,8 +159,18 @@ function showStickyAddToCart() {
                 doc = $(document),
                 winH = win.height(),
                 winT = win.scrollTop(),
-                docH = doc.height(),
-                elH = $('.product-bundle').height() - 100;
+                docH = doc.height();
+
+            if ($('.product-bundle').length > 0) {
+                console.log('bundle');
+                var elH = $('.product-bundle').height() - 100;
+            }
+
+            if ($('.product-set').length > 0) {
+                console.log('set');
+                var elH = $('.product-set').height() - 100;
+            }
+
             if (docH - winH - winT < elH) {
                 $('.sticky-add-to-cart').css("right", "5%");
             } else {

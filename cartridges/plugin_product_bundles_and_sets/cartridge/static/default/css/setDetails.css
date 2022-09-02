@@ -1,18 +1,3 @@
-.bundle-item .attributes {
-  padding-left: 0;
-  padding-right: 0; }
-
-.bundle-item .product-availability {
-  display: block; }
-
-.bundle-item .product-availability div:last-child {
-  -ms-flex: 0 0 100%;
-      flex: 0 0 100%;
-  max-width: 100%; }
-
-.bundle-item .primary-images .carousel img {
-  height: fit-content; }
-
 .sticky-add-to-cart .quantity-label {
   display: none; }
 

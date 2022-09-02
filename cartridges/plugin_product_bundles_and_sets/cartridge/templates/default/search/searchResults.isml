@@ -1,0 +1,15 @@
+<isdecorate template="common/layout/page">
+    <isscript>
+        var assets = require('*/cartridge/scripts/assets');
+        assets.addJs('/js/search.js');
+        assets.addCss('/css/search.css');
+        assets.addCss('/css/product/detail.css');
+        assets.addCss('/css/setQuickView.css');
+    </isscript>
+
+    <iscomment>
+        <isslot id="category-search-banner" description="Banner section at the top of the category search page" context="category" context-object="${pdict.category}" />
+    </iscomment>
+
+    <isinclude template="search/searchResultsNoDecorator" />
+</isdecorate>

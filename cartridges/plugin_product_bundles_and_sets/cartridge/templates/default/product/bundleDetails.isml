@@ -98,7 +98,7 @@
 
     </div>
 
-    <div class="col-sm-2 row bundle-footer sticky-add-to-cart">
+    <div class="col-sm-2 row bundle-footer sticky-add-to-cart mobile-hide">
 
         <!-- Availability -->
         <iscomment> <div class="availability clearfix global-availability" data-ready-to-order="${bundle.readyToOrder}">
