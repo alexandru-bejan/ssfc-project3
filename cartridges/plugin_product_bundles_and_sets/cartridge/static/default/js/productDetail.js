@@ -133,6 +133,7 @@ let sfraDetail = __webpack_require__(5);
 */
 function enableGlobalAddToCart() {
     $(document).ready(function (e, response) {
+       // $("#set-error-message").css("visibility", "hidden");
         sfraDetail.methods.updateAddToCartEnableDisableOtherElements(false);
     })
 }
@@ -285,6 +286,8 @@ function addToCart(){
         });
 
         if ($(this).hasClass("add-to-cart-global") && !canBeOrdered) {
+            $("#set-error-message").attr("hidden",false)
+
             $(".select-size").each(function () {
                 if ($(this).find(":selected").text() == $(this).find("option:first-child").text()) {
                     $(this).addClass("is-invalid")
@@ -371,6 +374,12 @@ sfraDetail.manageInvalidMarks = manageInvalidMarks;
 
 $('body').on("product:afterAttributeSelect", function () {
     $('button.add-to-cart-global').prop("disabled", false);
+    let canBeOrdered = $('.product-availability').toArray().every(function (item) {
+        return $(item).data('available') && $(item).data('ready-to-order');
+    });
+    if (canBeOrdered) {
+        $("#set-error-message").attr("hidden",true);
+    }
 })
 
 var exportDetails = $.extend({}, sfraBase, sfraDetail, {

@@ -12,5 +12,8 @@
                 ${Resource.msg('button.addtocart', 'common', null)}
             </isif>
         </button>
+        <div id="set-error-message" class="alert-danger" role="alert" hidden="true">
+            <p>${Resource.msg('button.addalltocart.error', 'set', null)}</p>
+        </div>
     </div>
 </div>
