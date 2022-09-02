@@ -4,6 +4,7 @@
         var assets = require('*/cartridge/scripts/assets');
         assets.addJs('/js/productDetail.js');
         assets.addCss('/css/product/detail.css');
+        assets.addCss('/css/bundleSetDetails.css');
     </isscript>
 
     <iscomment>
@@ -67,6 +68,17 @@
                             <isinclude template="product/components/addToCartGlobal" />
                         </div>
 
+                        <div class="col-12 prices-add-to-cart-actions custom-sticky-prices-add-to-cart-actions">
+                            <!-- Prices -->
+                            <div class="bundlePrices">
+                                <isset name="price" value="${product.price}" scope="page" />
+                                <isinclude template="product/components/pricing/main" />
+                            </div>
+
+                            <!-- Cart and [Optionally] Apple Pay -->
+                            <isinclude template="product/components/addToCartGlobal" />
+                        </div>
+
                         <!-- Social Sharing Icons -->
                         <isinclude template="product/components/socialIcons" />
                     </div>
@@ -96,33 +108,5 @@
 
         <isinclude template="product/components/bundleItems" />
 
-    </div>
-
-    <div class="col-sm-2 row bundle-footer sticky-add-to-cart">
-
-        <!-- Availability -->
-        <iscomment> <div class="availability clearfix global-availability" data-ready-to-order="${bundle.readyToOrder}">
-            <isinclude template="product/components/availabilityBundleContainer" />
-        </div> </iscomment>
-
-        <div class="col-12 prices-add-to-cart-actions">
-            <!-- Prices -->
-            <div class="bundlePrices mb-3">
-                <isset name="price" value="${product.price}" scope="page" />
-                <isinclude template="product/components/pricing/main" />
-            </div>
-        </div>
-        <div class="col-sm-6 d-flex align-items-end justify-content-center">
-            <!-- Quantity -->
-            <isset name="loopState" value="${{
-                                           count: 1}}" scope="page" />
-            <isset name="product" value="${bundle}" scope="page" />
-            <isinclude template="product/components/quantity" />
-        </div>
-
-        <div class="col-sm-6 d-flex align-items-end justify-content-center">
-           <!-- Cart and [Optionally] Apple Pay -->
-            <isinclude template="product/components/addToCartGlobal" />
-        </div>
     </div>
 </isdecorate>

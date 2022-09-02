@@ -1,0 +1,19 @@
+.custom-sticky-prices-add-to-cart-actions {
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  z-index: 50;
+  padding-right: 0;
+  padding-left: 0;
+  left: 0;
+  background-color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  display: none; }
+  @media (max-width: 575.98px) {
+    .custom-sticky-prices-add-to-cart-actions {
+      display: none; } }
+  .custom-sticky-prices-add-to-cart-actions .price {
+    text-align: center; }
+  .custom-sticky-prices-add-to-cart-actions .cart-and-ipay {
+    text-align: center;
+    padding-bottom: 26px; }

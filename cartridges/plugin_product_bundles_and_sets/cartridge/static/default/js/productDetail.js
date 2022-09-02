@@ -366,8 +366,49 @@ function addToCart(){
     });
 }
 
+function showStickyAddToCart() {
+    $(document).ready(function () {
+        $(window).bind('scroll', function (event) {
+            var win = $(this),
+                doc = $(document),
+                winH = win.height(),
+                winT = win.scrollTop(),
+                docH = doc.height();
+
+            if ($('.product-bundle').length > 0) {
+                var elH = $('.product-bundle').height() - 100;
+            }
+
+            if ($('.product-set').length > 0) {
+                var elH = $('.product-set').height() - 100;
+            }
+
+            if (docH - winH - winT < elH) {
+                $('.custom-sticky-prices-add-to-cart-actions').css("display", "block");
+            } else {
+                $('.custom-sticky-prices-add-to-cart-actions').css("display", "none");
+            }
+        });
+    });
+}
+
+/**
+ * Add product id to details and description accordions
+ */
+
+ function detailsAndDescriptionPid() {
+    $(document).ready(function () {
+        $('.accBody').each(function () {
+            let prodId = $(this).attr('id');
+            $(this).parent().find($('a')).attr('href', '#' + prodId)
+        })
+    })
+}
+
 sfraDetail.enableGlobalAddToCart = enableGlobalAddToCart;
 sfraDetail.manageInvalidMarks = manageInvalidMarks;
+sfraDetail.showStickyAddToCart = showStickyAddToCart;
+sfraDetail.detailsAndDescriptionPid = detailsAndDescriptionPid;
 
 $('body').on("product:afterAttributeSelect", function () {
     $('button.add-to-cart-global').prop("disabled", false);
@@ -1230,7 +1271,7 @@ module.exports = {
 
     getPidValue: getPidValue,
     getQuantitySelected: getQuantitySelected,
-    miniCartReportingUrl: miniCartReportingUrl,
+    miniCartReportingUrl: miniCartReportingUrl
 };
 
 
