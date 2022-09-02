@@ -54,36 +54,6 @@ function manageInvalidMarkForColorSelect() {
 }
 
 /**
- * Add product id to details and description accordions
- */
-function detailsAndDescriptionPid() {
-    $(document).ready(function () {
-        $('.accBody').each(function () {
-            let prodId = $(this).attr('id');
-            $(this).parent().find($('a')).attr('href', '#' + prodId)
-        })
-    })
-}
-
-function showStickyAddToCart() {
-    $(document).ready(function () {
-        $(window).bind('scroll', function (event) {
-            var win = $(this),
-                doc = $(document),
-                winH = win.height(),
-                winT = win.scrollTop(),
-                docH = doc.height(),
-                elH = $('.product-bundle').height() - 100;
-            if (docH - winH - winT < elH) {
-                $('.sticky-add-to-cart').css("right", "5%");
-            } else {
-                $('.sticky-add-to-cart').css("right", "-20%");
-            }
-        });
-    });
-}
-
-/**
  * Retrieve product options
  *
  * @param {jQuery} $productContainer - DOM element for current product
@@ -188,13 +158,8 @@ function addToCart(){
         let canBeOrdered = $('.product-availability').toArray().every(function (item) {
             return $(item).data('available') && $(item).data('ready-to-order');
         });
-        let classes = $(this).attr('class').split(/\s+/)
-        let flag = false;
-        $.each(classes, function (index, item) {
-            if (item === "add-to-cart-global") flag = true;
-        })
-        
-        if (flag && !canBeOrdered) {
+
+        if ($(this).hasClass("add-to-cart-global") && !canBeOrdered) {
             $(".select-size").each(function () {
                 if ($(this).find(":selected").text() == $(this).find("option:first-child").text()) {
                     $(this).addClass("is-invalid")
@@ -278,8 +243,6 @@ function addToCart(){
 
 sfraDetail.enableGlobalAddToCart = enableGlobalAddToCart;
 sfraDetail.manageInvalidMarks = manageInvalidMarks;
-sfraDetail.detailsAndDescriptionPid = detailsAndDescriptionPid;
-sfraDetail.showStickyAddToCart = showStickyAddToCart;
 
 $('body').on("product:afterAttributeSelect", function () {
     $('button.add-to-cart-global').prop("disabled", false);
